@@ -85,12 +85,12 @@ public final class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        FS fs = new FS(System.in);
-        // int t = Integer.parseInt(fs.next()); // uncomment for multi-case
+        FS in = new FS(System.in);
+        // int t = in.nextInt(); // uncomment for multi-case
         // while (t-- > 0) {
-        //     int n = fs.nextInt();
+        //     int n = in.nextInt();
         //     // long[] a = new long[n];
-        //     // for (int i = 0; i < n; i++) a[i] = fs.nextLong();
+        //     // for (int i = 0; i < n; i++) a[i] = in.nextLong();
         //     // TODO: solve
         //     // out.println(ans);
         // }

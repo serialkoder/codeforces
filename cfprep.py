@@ -82,6 +82,60 @@ public final class Main {
         }
         int nextInt() throws IOException { return Integer.parseInt(next()); }
         long nextLong() throws IOException { return Long.parseLong(next()); }
+
+        private byte[] readAllBytes() throws IOException {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (ptr < len) {
+                baos.write(buffer, ptr, len - ptr);
+                ptr = len;
+            }
+            byte[] tmp = new byte[1 << 16];
+            int r;
+            while ((r = in.read(tmp)) != -1) baos.write(tmp, 0, r);
+            return baos.toByteArray();
+        }
+
+        int[] readAllInts() throws IOException {
+            byte[] b = readAllBytes();
+            int[] a = new int[Math.max(8, b.length / 2)];
+            int sz = 0;
+            int i = 0;
+            while (i < b.length) {
+                while (i < b.length && b[i] <= 32) i++;
+                if (i >= b.length) break;
+                int sign = 1;
+                if (b[i] == '-') { sign = -1; i++; }
+                int v = 0;
+                while (i < b.length && b[i] > 32) {
+                    v = v * 10 + (b[i] - '0');
+                    i++;
+                }
+                if (sz == a.length) a = Arrays.copyOf(a, a.length * 2);
+                a[sz++] = v * sign;
+            }
+            return Arrays.copyOf(a, sz);
+        }
+
+        long[] readAllLongs() throws IOException {
+            byte[] b = readAllBytes();
+            long[] a = new long[Math.max(8, b.length / 2)];
+            int sz = 0;
+            int i = 0;
+            while (i < b.length) {
+                while (i < b.length && b[i] <= 32) i++;
+                if (i >= b.length) break;
+                long sign = 1;
+                if (b[i] == '-') { sign = -1; i++; }
+                long v = 0;
+                while (i < b.length && b[i] > 32) {
+                    v = v * 10 + (b[i] - '0');
+                    i++;
+                }
+                if (sz == a.length) a = Arrays.copyOf(a, a.length * 2);
+                a[sz++] = v * sign;
+            }
+            return Arrays.copyOf(a, sz);
+        }
     }
 
     public static void main(String[] args) throws Exception {

@@ -49,16 +49,16 @@ import java.io.*;
 import java.util.*;
 
 public final class Main {
-    private static final StringBuilder out = new StringBuilder();
+    private static final PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
 
-    private static void y() { out.append("YES").append('\\n'); }
-    private static void n() { out.append("NO").append('\\n'); }
-    private static void yn(boolean ok) { out.append(ok ? "YES" : "NO").append('\\n'); }
+    private static void y() { out.println("YES"); }
+    private static void n() { out.println("NO"); }
+    private static void yn(boolean ok) { out.println(ok ? "YES" : "NO"); }
 
-    private static void pc(char[] a) { out.append(a); }
-    private static void pcl(char[] a) { out.append(a).append('\\n'); }
-    private static void pc(char[] a, int off, int len) { out.append(a, off, len); }
-    private static void pcl(char[] a, int off, int len) { out.append(a, off, len).append('\\n'); }
+    private static void pc(char[] a) { out.print(a); }
+    private static void pcl(char[] a) { out.print(a); out.println(); }
+    private static void pc(char[] a, int off, int len) { out.write(a, off, len); }
+    private static void pcl(char[] a, int off, int len) { out.write(a, off, len); out.println(); }
 
     private static final class FS {
         private final InputStream in;
@@ -94,7 +94,7 @@ public final class Main {
         //     // TODO: solve
         //     // out.println(ans);
         // }
-        System.out.print(out);
+        out.flush();
     }
 }
 """

@@ -30,6 +30,9 @@ def n():
 def yn(ok: bool):
     print("YES" if ok else "NO")
 
+def fail():
+    print(-1)
+
 def solve():
     # t = int(next(it))  # uncomment if multiple test cases
     # for _ in range(t):
@@ -54,6 +57,7 @@ public final class Main {
     private static void y() { out.println("YES"); }
     private static void n() { out.println("NO"); }
     private static void yn(boolean ok) { out.println(ok ? "YES" : "NO"); }
+    private static void fail() { out.println(-1); }
 
     private static void pc(char[] a) { out.print(a); }
     private static void pcl(char[] a) { out.print(a); out.println(); }

@@ -1,0 +1,19 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Java
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+
+# Temporary scratch dirs
+.tmp_*/

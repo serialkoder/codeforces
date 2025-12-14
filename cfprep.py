@@ -83,6 +83,18 @@ public final class Main {
         int nextInt() throws IOException { return Integer.parseInt(next()); }
         long nextLong() throws IOException { return Long.parseLong(next()); }
 
+        int[] readInts(int n) throws IOException {
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++) a[i] = nextInt();
+            return a;
+        }
+
+        long[] readLongs(int n) throws IOException {
+            long[] a = new long[n];
+            for (int i = 0; i < n; i++) a[i] = nextLong();
+            return a;
+        }
+
         private byte[] readAllBytes() throws IOException {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             if (ptr < len) {

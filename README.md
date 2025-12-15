@@ -13,7 +13,10 @@ Unified workspace for solutions and tooling across platforms.
 **Codeforces**
 
 - Download contest templates + samples:
-  - `cd codeforces && python3 cfprep.py get <contest_id> --letters A-F --langs py,java --samples`
+  - From repo root (auto writes under `codeforces/`):
+    - `python3 cfprep.py get <contest_id> --letters A-F --langs py,java --samples`
+  - Or from inside `codeforces/`:
+    - `cd codeforces && python3 cfprep.py get <contest_id> --letters A-F --langs py,java --samples`
 - Run samples:
   - `cd codeforces/<contest-folder> && python3 cf_runner.py test A --lang java`
 

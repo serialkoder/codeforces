@@ -40,15 +40,20 @@ public final class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        FS fs = new FS(System.in);
-        // int t = Integer.parseInt(fs.next()); // uncomment for multi-case
-        // while (t-- > 0) {
-        //     int n = fs.nextInt();
-        //     // long[] a = new long[n];
-        //     // for (int i = 0; i < n; i++) a[i] = fs.nextLong();
-        //     // TODO: solve
-        //     // out.println(ans);
-        // }
-        System.out.print(out);
+        FS in = new FS(System.in);
+        int n = in.nextInt();
+        int m = in.nextInt();
+        int a = in.nextInt();
+        int b = in.nextInt();
+        int ans = 100000000;
+        for(int i=0;i<=n;i++){
+            int a1 = i*b;
+            int a2 = (n-m*i)*a;
+            if(a2 < 0){
+                a2 = 0;
+            }
+            ans = Math.min(ans,a1+a2);
+        }
+        System.out.println(ans);
     }
 }

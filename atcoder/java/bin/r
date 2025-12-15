@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: r <contest> [LETTERS|--all] [--verbose] [--fail-fast]" >&2
+  echo "  e.g. r abc414 --all" >&2
+  echo "       r abc414 A,B -v" >&2
+  exit 1
+fi
+
+contest=$1; shift || true
+letters=""
+args=()
+
+for arg in "$@"; do
+  case "$arg" in
+    --all|-a|--verbose|-v|--fail-fast)
+      args+=("$arg")
+      ;;
+    *)
+      if [[ -z "$letters" ]]; then
+        letters="$arg"
+      else
+        args+=("$arg")
+      fi
+      ;;
+  esac
+done
+
+if [[ -n "$letters" ]]; then
+  exec python3 tools/acj.py test "$contest" -p "$letters" "${args[@]}"
+else
+  exec python3 tools/acj.py test "$contest" "${args[@]}"
+fi
+

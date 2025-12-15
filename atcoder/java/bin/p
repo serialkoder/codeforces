@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: p <contest> [LETTERS]" >&2
+  echo "  e.g. p abc414" >&2
+  echo "       p abc414 A,B,D" >&2
+  exit 1
+fi
+
+contest=$1
+letters=${2:-}
+
+if [[ -n "$letters" ]]; then
+  exec python3 tools/acj.py parse "$contest" -p "$letters"
+else
+  exec python3 tools/acj.py parse "$contest"
+fi
+

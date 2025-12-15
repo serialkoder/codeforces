@@ -6,14 +6,33 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+.venv/
+venv/
 
 # Java
 *.class
 *.jar
 
+# Native build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.dSYM/
+a.out
+
+# Repo-specific generated binaries
+atcoder/**/sum_unique_squares
+
 # IDE
 .idea/
 *.iml
+
+# Generated artifacts
+*.pdf
+*.png
+*.dot
 
 # Temporary scratch dirs
 .tmp_*/

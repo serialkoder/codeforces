@@ -8,7 +8,7 @@
 
 import argparse, json, os, re, sys, html, urllib.request
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from string import Template
 
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Safari/537.36"
@@ -168,6 +168,27 @@ public final class Main {
     }
 }
 """
+
+def load_shared_java_template() -> Optional[str]:
+    p = Path(__file__).resolve().parent.parent / "template" / "Main.java"
+    if not p.exists():
+        return None
+    try:
+        return p.read_text(encoding="utf-8")
+    except Exception:
+        return None
+
+
+def render_java_source(contest_id: int, letter: str, name: str) -> str:
+    shared = load_shared_java_template()
+    if shared is None:
+        return Template(JAVA_TPL).substitute(contest_id=contest_id, letter=letter, name=name)
+    header = (
+        f"// Contest: {contest_id}  Problem: {letter} - {name}\n"
+        f"// URL: https://codeforces.com/contest/{contest_id}/problem/{letter}\n"
+    )
+    return header + shared.lstrip("\n")
+
 
 # -------- colorized runner to write into <contest_root>/cf_runner.py --------
 CF_RUNNER = r"""#!/usr/bin/env python3
@@ -543,9 +564,7 @@ def write_problem_dir(
         if "java" in langs:
             ensure_file(
                 pdir / "Main.java",
-                Template(JAVA_TPL).substitute(
-                    contest_id=contest_id, letter=letter, name=name
-                ),
+                render_java_source(contest_id=contest_id, letter=letter, name=name),
                 overwrite,
             )
 

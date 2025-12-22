@@ -158,6 +158,12 @@ def derive_letter_from_slug(slug: str) -> str | None:
 
 
 def find_java_template(root: str) -> str:
+    # Prefer shared template at repo_root/template/Main.java
+    script_dir = os.path.dirname(os.path.abspath(__file__))  # .../atcoder/java/tools
+    shared = os.path.normpath(os.path.join(script_dir, "..", "..", "..", "template", "Main.java"))
+    if os.path.isfile(shared):
+        return shared
+
     candidates = [
         os.path.join(root, "Main.java"),
     ]

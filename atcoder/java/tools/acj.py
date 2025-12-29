@@ -93,14 +93,21 @@ class SampleParser(HTMLParser):
     This avoids picking up the generic format blocks under 入力/出力 sections.
     """
 
-    def __init__(self):
+    def __init__(self, lang: str = "ja"):
         super().__init__()
+        if lang not in ("ja", "en", "any"):
+            raise ValueError("lang must be one of: ja, en, any")
+        self.lang = lang
         self.samples = []  # list[(label, text)] where label in {'in','out'} or None
         self._capture_pre = False
         self._current_pre: list[str] = []
         self._in_heading = False
         self._current_heading: list[str] = []
         self._sample_mode: str | None = None  # 'in' / 'out' when the next <pre> should be captured
+        # AtCoder includes both Japanese and English statements in the same HTML,
+        # wrapped in elements like <span class="lang-ja"> and <span class="lang-en">.
+        # Track the current language scope so we don't duplicate samples.
+        self._lang_stack: list[tuple[str, str]] = []  # (tag, lang)
 
     @staticmethod
     def _classify_heading(text: str) -> str | None:
@@ -112,14 +119,30 @@ class SampleParser(HTMLParser):
             return "out"
         return None
 
+    def _lang_allowed(self) -> bool:
+        if self.lang == "any":
+            return True
+        current = self._lang_stack[-1][1] if self._lang_stack else None
+        return current is None or current == self.lang
+
     def handle_starttag(self, tag, attrs):
+        cls = dict(attrs).get("class", "")
+        if cls:
+            tokens = set(re.split(r"\s+", cls.strip()))
+            if "lang-ja" in tokens:
+                self._lang_stack.append((tag, "ja"))
+            elif "lang-en" in tokens:
+                self._lang_stack.append((tag, "en"))
+
         if tag in ("h2", "h3", "h4", "h5"):
-            self._in_heading = True
-            self._current_heading = []
+            if self._lang_allowed():
+                self._in_heading = True
+                self._current_heading = []
         elif tag == "pre":
             # start capturing candidates; will be appended only if _sample_mode set
-            self._capture_pre = True
-            self._current_pre = []
+            if self._lang_allowed():
+                self._capture_pre = True
+                self._current_pre = []
 
     def handle_endtag(self, tag):
         if tag in ("h2", "h3", "h4", "h5"):
@@ -138,10 +161,13 @@ class SampleParser(HTMLParser):
                 self._current_pre = []
                 self._sample_mode = None
 
+        if self._lang_stack and self._lang_stack[-1][0] == tag:
+            self._lang_stack.pop()
+
     def handle_data(self, data):
-        if self._in_heading:
+        if self._in_heading and self._lang_allowed():
             self._current_heading.append(data)
-        if self._capture_pre:
+        if self._capture_pre and self._lang_allowed():
             self._current_pre.append(data)
 
 
@@ -214,10 +240,22 @@ def write_samples(tests_dir: str, inouts: list[tuple[str | None, str]]):
             f.write(inputs[i])
         with open(os.path.join(tests_dir, f"sample{i+1}.out"), "w", encoding="utf-8") as f:
             f.write(outputs[i])
+
+    # Clean up old duplicated samples (e.g., when both lang-ja and lang-en were parsed).
+    for fname in os.listdir(tests_dir):
+        m = re.match(r"sample(\d+)\.(in|out)$", fname)
+        if not m:
+            continue
+        idx = int(m.group(1))
+        if idx > count:
+            try:
+                os.remove(os.path.join(tests_dir, fname))
+            except OSError:
+                pass
     return count
 
 
-def parse_contest(contest: str, only_letters: set[str] | None, root: str):
+def parse_contest(contest: str, only_letters: set[str] | None, root: str, lang: str):
     tasks_url = f"{BASE_URL}/contests/{contest}/tasks"
     print(f"{BLUE}{BOLD}Fetching tasks:{RESET} {tasks_url}")
     html = http_get(tasks_url)
@@ -258,7 +296,7 @@ def parse_contest(contest: str, only_letters: set[str] | None, root: str):
 
         # Fetch and parse samples
         thtml = http_get(task_url)
-        sp = SampleParser()
+        sp = SampleParser(lang=lang)
         sp.feed(thtml)
         n = write_samples(tests_dir, sp.samples)
         print(f"   Samples: {GREEN}{n}{RESET} saved in {tests_dir}")
@@ -394,6 +432,8 @@ def parse_args(argv):
     ap_parse = sub.add_parser("parse", help="Parse a contest and scaffold problems + samples")
     ap_parse.add_argument("contest", help="Contest id, e.g., abc414")
     ap_parse.add_argument("--problems", "-p", help="Comma-separated problem letters, e.g., A,B,D", default=None)
+    ap_parse.add_argument("--lang", choices=["ja", "en", "any"], default="ja",
+                          help="Which statement language to parse samples from (default: ja)")
 
     ap_test = sub.add_parser("test", help="Compile and run sample tests")
     ap_test.add_argument("contest", help="Contest id, e.g., abc414")
@@ -413,7 +453,7 @@ def main(argv=None):
         letters = None
         if args.problems:
             letters = set(x.strip().upper() for x in re.split(r"[\s,]+", args.problems) if x.strip())
-        parse_contest(args.contest, letters, root)
+        parse_contest(args.contest, letters, root, lang=args.lang)
         return 0
     elif args.cmd == "test":
         letters = None

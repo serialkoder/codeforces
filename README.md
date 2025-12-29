@@ -23,6 +23,14 @@ Unified workspace for solutions and tooling across platforms.
 **AtCoder**
 
 - Java workspace lives under `atcoder/java/`.
+- Download problems + sample tests (scaffold):
+  - `cd atcoder/java && ./bin/p abc414` (all problems)
+  - `cd atcoder/java && ./bin/p abc414 A,B,D` (subset)
+  - (equivalent) `cd atcoder/java && python3 tools/acj.py parse abc414 -p A,B,D`
+- Run sample tests:
+  - `cd atcoder/java && ./bin/r abc414 --all`
+  - `cd atcoder/java && ./bin/r abc414 A,B -v` (verbose)
+  - (equivalent) `cd atcoder/java && python3 tools/acj.py test abc414 -p A,B --verbose`
 
 **Project Euler**
 

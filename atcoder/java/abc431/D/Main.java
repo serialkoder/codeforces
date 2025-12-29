@@ -16,12 +16,29 @@ public final class Main {
     }
 
     private static void solve() throws Exception {
-        // int n = in.nextInt();
-        // long x = in.nextLong();
-        // String s = in.next();
-        //
-        // TODO: solve
-        // out.println(answer);
+        int n = in.nextInt();
+        int [] w = new int[n];
+        int [] h = new int[n];
+        int [] b = new int[n];
+        int total = 0;
+        long baseHappiness = 0;
+        for(int i = 0;i <n;i++){
+            w[i] = in.nextInt();
+            h[i] = in.nextInt();
+            b[i] = in.nextInt();
+            total += w[i];
+            baseHappiness += b[i];
+        }        
+        int threshold = total/2;
+        long [] dp = new long[threshold+1];
+        for(int i=0;i<n;i++){
+            int wi = w[i];
+            long vi = h[i]-b[i];
+            for(int c= threshold;c>=wi;c--){
+                dp[c] = Math.max(dp[c],dp[c-wi] + vi);
+            }
+        }
+        out.println(dp[threshold]+baseHappiness);
     }
 
     private static final class FastScanner {
